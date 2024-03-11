@@ -3,15 +3,15 @@ config:
   # It's designed to be highly scalable
   target: http://localhost:3000
   phases:
-    - duration: 20
+    - duration: 60
       arrivalRate: 1
-      rampTo: 5
-      name: Warm up phase
-    - duration: 20
-      arrivalRate: 5
       rampTo: 10
+      name: Warm up phase
+    - duration: 60
+      arrivalRate: 5
+      rampTo: 20
       name: Ramp up load
-    - duration: 20
+    - duration: 60
       arrivalRate: 10
       rampTo: 30
       name: Spike phase
@@ -30,8 +30,9 @@ config:
 scenarios:
   - flow:
       - loop:
-          - get:
-              url: '/auth/test2'
-              headers:
-                Cookie: authorization=Bearer%20eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjI0LCJpYXQiOjE3MTAwNjA1OTQsImV4cCI6MTcxMzY2MDU5NH0.BovkoyhqmD9be_v8S7Winfq3Xe3iPYKuR0FyAjrTzPc
+          - post:
+              url: '/reservation/queue'
+              json:
+                reservationData: '냠냠냠'
+
         count: 100

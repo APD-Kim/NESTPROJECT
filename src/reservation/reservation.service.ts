@@ -34,8 +34,6 @@ export class ReservationService {
     private seatService: SeatService,
     private concertService: ConcertService,
     private pointService: PointService,
-    @InjectQueue('reservation')
-    private reservationQueue: Queue,
   ) {}
   async createReservation(createReservationDto: CreateReservationDto, user: User) {
     const { concertId, reservationSeats } = createReservationDto;
@@ -142,8 +140,5 @@ export class ReservationService {
       await this.pointService.createPointHistory(manager, userId, refundPoint, PointHistoryStatus.addPoint, totalPoint);
     });
     return { message: `${reservationId}번 예약이 성공적으로 취소되었습니다.` };
-  }
-  async createReservationByQueue(reservationData: any) {
-    await this.reservationQueue.add(reservationData);
   }
 }

@@ -24,12 +24,12 @@ import { PointHistory } from './point/entity/point.history.entity';
 import { Concert } from './concert/entities/concert.entity';
 import { LoggingInterceptor } from './logging.interceptor';
 import { BullModule } from '@nestjs/bull';
-import { RedisModule } from './redis/redis.module';
+import { RedisModule } from '@nestjs-modules/ioredis';
 
 const typeOrmModuleOptions = {
   useFactory: async (configService: ConfigService): Promise<TypeOrmModuleOptions> => ({
     type: 'mysql',
-    host: configService.get('DB_HOST'),
+    host: configService.get<string>('DB_HOST'),
     port: configService.get('DB_PORT'),
     username: configService.get('DB_USERNAME'),
     password: configService.get('DB_PASSWORD'),
@@ -44,7 +44,6 @@ export const queueFactory = (configService: ConfigService) => ({
   redis: {
     host: configService.get<string>('REDIS_HOST', { infer: true }),
     port: configService.get<number>('REDIS_PORT', { infer: true }),
-    password: configService.get<string>('REDIS_PASSWORD', { infer: true }),
   },
 });
 
@@ -66,6 +65,7 @@ export const queueFactory = (configService: ConfigService) => ({
       useFactory: queueFactory,
       inject: [ConfigService],
     }),
+
     TypeOrmModule.forRootAsync(typeOrmModuleOptions),
     AuthModule,
     UserModule,
@@ -73,8 +73,12 @@ export const queueFactory = (configService: ConfigService) => ({
     PointModule,
     ReservationModule,
     SeatModule,
-
-    RedisModule,
+    RedisModule.forRootAsync({
+      useFactory: () => ({
+        type: 'single',
+        url: 'redis://127.0.0.1:6380',
+      }),
+    }),
   ],
   controllers: [AppController],
   providers: [AppService, LoggingInterceptor],

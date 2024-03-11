@@ -10,8 +10,6 @@ import { ConcertModule } from 'src/concert/concert.module';
 import { User } from 'src/user/entity/user.entity';
 import { PointModule } from 'src/point/point.module';
 import { Reservation } from './entities/reservation.entity';
-import { BullModule } from '@nestjs/bull';
-import { ReservationProcessor } from './reservation.processor';
 
 @Module({
   imports: [
@@ -21,11 +19,8 @@ import { ReservationProcessor } from './reservation.processor';
     ConcertModule,
     AuthModule,
     PointModule,
-    BullModule.registerQueue({
-      name: 'reservation',
-    }),
   ],
   controllers: [ReservationController],
-  providers: [ReservationService, ReservationProcessor],
+  providers: [ReservationService],
 })
 export class ReservationModule {}

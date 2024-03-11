@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   Logger,
+  ParseIntPipe,
   Post,
   Res,
   UnauthorizedException,
@@ -16,6 +17,7 @@ import { Response } from 'express';
 import { AuthGuard } from '@nestjs/passport';
 import { GetUser } from './get-user.decorator';
 import { RolesGuard } from './roles.guard';
+import { ValidEmailDto } from './dto/eamil.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -46,7 +48,12 @@ export class AuthController {
   @Get('/profile')
   @UseGuards(RolesGuard)
   async getProfile(@GetUser() user: User) {
-    this.logger.verbose('test메서드 실행중');
     return await this.authService.userProfile(user);
+  }
+  @Post('valid')
+  @UseGuards(AuthGuard('jwt'))
+  async validEmail(@GetUser() user: User, @Body() validEmailDto: ValidEmailDto) {
+    this.logger.verbose('valid 메서드 실행중');
+    return await this.authService.sendValidNumber(validEmailDto, user);
   }
 }

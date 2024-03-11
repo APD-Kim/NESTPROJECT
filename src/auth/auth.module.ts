@@ -11,6 +11,9 @@ import { GetUser } from './get-user.decorator';
 import { PointModule } from 'src/point/point.module';
 import { Point } from 'src/point/entity/point.entity';
 import { RolesGuard } from './roles.guard';
+import { BullModule } from '@nestjs/bull';
+import { ReservationProcessor } from './bull.processor';
+import { redisClientFactory } from 'src/redis/redis';
 @Module({
   imports: [
     PassportModule.register({ defaultStrategy: 'jwt', session: false }),
@@ -26,8 +29,11 @@ import { RolesGuard } from './roles.guard';
     }),
     TypeOrmModule.forFeature([User, Point]),
     forwardRef(() => PointModule),
+    BullModule.registerQueue({
+      name: 'valid',
+    }),
   ],
-  providers: [AuthService, JwtStrategy, RolesGuard],
+  providers: [AuthService, JwtStrategy, RolesGuard, ReservationProcessor],
   controllers: [AuthController],
   exports: [JwtStrategy, PassportModule, RolesGuard],
 })

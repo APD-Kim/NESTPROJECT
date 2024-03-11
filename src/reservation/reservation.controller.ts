@@ -38,10 +38,4 @@ export class ReservationController {
   remove(@Param('id') reservationid: number, @GetUser() user: User) {
     return this.reservationService.cancelReservation(reservationid, user);
   }
-
-  @Post('/queue')
-  async create(@Body() reservationData: any) {
-    await this.reservationService.createReservationByQueue(reservationData);
-    return { message: 'Reservation created and added to the queue.' };
-  }
 }

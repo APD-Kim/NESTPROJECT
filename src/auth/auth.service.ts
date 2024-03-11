@@ -16,6 +16,10 @@ import { Point } from '../point/entity/point.entity';
 import { PointHistory } from '../point/entity/point.history.entity';
 import { PointHistoryStatus } from '../point/point-history-status-enum';
 import { PointService } from '../point/point.service';
+import { ValidEmailDto } from './dto/eamil.dto';
+import { Queue } from 'bull';
+import { ReservationProcessor } from './bull.processor';
+import { InjectQueue } from '@nestjs/bull';
 
 @Injectable()
 export class AuthService {
@@ -24,7 +28,10 @@ export class AuthService {
     private userRepository: Repository<User>,
     private jwtService: JwtService,
     private pointService: PointService,
-    @InjectEntityManager() private entityManager: EntityManager,
+    @InjectEntityManager()
+    private entityManager: EntityManager,
+    @InjectQueue('valid')
+    private queue: Queue,
   ) {}
   async createUser(createUserCredentialDto: CreateUserCredentialDto): Promise<User> {
     console.log(1);
@@ -90,5 +97,19 @@ export class AuthService {
       }
     });
     return { rest, point: total };
+  }
+
+  async sendValidNumber(validEmailDto: ValidEmailDto, user: User) {
+    const { email } = validEmailDto;
+    const jobData = {
+      email,
+      user,
+    };
+    this.queue.add('valid', jobData, { removeOnComplete: true });
+    return { message: '이메일 전송 완료' };
+    //이미 이메일 유효성 검사는 통과했으니 바로 이메일 보내주면 됨 //완료
+    // 이메일에 인증 코드를 보내줬을 때, 해당 유저의 아이디와 이메일을 레디스에 인증코드로 저장해두고,
+    // 다른 메서드에서 해당 인증코드를 body에 담아 보내줬을 때, 해당 인증코드를 redis에서 찾고, 일치하는 값이 있다면
+    // 해당 인증코드의 value값을 꺼내 해당 유저 아이디로 이메일과 isValid를 추가해줌
   }
 }
