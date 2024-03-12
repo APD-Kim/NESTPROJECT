@@ -53,6 +53,7 @@ export class AuthController {
   @Post('valid')
   @UseGuards(AuthGuard('jwt'))
   async validEmail(@GetUser() user: User, @Body() validEmailDto: ValidEmailDto) {
+    console.log(user);
     this.logger.verbose('valid 메서드 실행중');
     return await this.authService.sendValidNumber(validEmailDto, user);
   }

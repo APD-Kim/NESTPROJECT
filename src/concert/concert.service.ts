@@ -32,7 +32,7 @@ export class ConcertService {
         for (let count = 0; count < seat[key].count; count++) {
           const createSeatDao = manager.create(Seat, {
             concertId: createdConcertData.concertId,
-            grade: key.toUpperCase(),
+            grade: key,
             price: seat[key].price,
           });
           await manager.save(createSeatDao);

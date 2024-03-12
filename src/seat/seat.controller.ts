@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ParseIntPipe } from '@nestjs/common';
 import { SeatService } from './seat.service';
 import { CreateSeatDto } from './dto/create-seat.dto';
 import { UpdateSeatDto } from './dto/update-seat.dto';
+import { PaginateSeatsDto } from './dto/paginate-seat.dto';
 
 @Controller('seat')
 export class SeatController {
@@ -13,8 +14,8 @@ export class SeatController {
   }
 
   @Get()
-  findAll() {
-    return this.seatService.findAll();
+  findAll(@Query() query: PaginateSeatsDto) {
+    return this.seatService.paginateSeats(query);
   }
   //좌석 존재 여부 빛 예약 여부 확인
 

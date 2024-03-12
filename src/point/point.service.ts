@@ -17,23 +17,21 @@ export class PointService {
     private pointHistoryRepository: Repository<PointHistory>,
   ) {}
   async getUserPoint(userId: number) {
-    const userPoint = await this.pointRepository.findOneBy({ userId });
+    const userPoint: Point = await this.pointRepository.findOneBy({ userId });
     if (_.isNil(userPoint)) {
       throw new NotFoundException('해당 유저를 찾을 수 없습니다.');
     }
-    console.log(userPoint);
     return userPoint.point;
   }
   async getUserPointByHistory(userId: number) {
-    const userPoint = await this.pointHistoryRepository.find({ where: { userId } });
+    const userPoint: PointHistory[] = await this.pointHistoryRepository.find({ where: { userId } });
     if (_.isNil(userPoint)) {
       throw new NotFoundException('해당 유저를 찾을 수 없습니다.');
     }
-    console.log(userPoint);
     return userPoint;
   }
 
-  async updateUserPoint(manager: EntityManager, userId: number, remainPoint: number) {
+  async updateUserPoint(manager: EntityManager, userId: number, remainPoint: number): Promise<void> {
     await manager.update(Point, userId, { point: remainPoint });
   }
   async createPointHistory(

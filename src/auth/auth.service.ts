@@ -34,12 +34,12 @@ export class AuthService {
     private queue: Queue,
   ) {}
   async createUser(createUserCredentialDto: CreateUserCredentialDto): Promise<User> {
-    console.log(1);
+
     const { username, password } = createUserCredentialDto;
     const hashedPassowrd: string = await hash(password, 10);
-    console.log(1);
+
     const foundUser: User = await this.userRepository.findOneBy({ username });
-    console.log(2);
+
     if (!_.isNil(foundUser)) {
       throw new ConflictException(`${username}는 이미 존재하는 아이디입니다.`);
     }
@@ -50,7 +50,6 @@ export class AuthService {
         password: hashedPassowrd,
       });
       const user: User = await manager.save(createdUserDao);
-      console.log(user);
       await this.pointService.createUserPoint(manager, user.userId, initialPoint);
       await this.pointService.createPointHistory(
         manager,
