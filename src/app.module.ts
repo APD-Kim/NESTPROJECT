@@ -75,7 +75,7 @@ export const queueFactory = (configService: ConfigService) => ({
     RedisModule.forRootAsync({
       useFactory: () => ({
         type: 'single',
-        url: 'redis://127.0.0.1:6380',
+        url: process.env.REDIS_URL,
       }),
     }),
     CacheModule.register({ isGlobal: true, ttl: 30, max: 300 }),
