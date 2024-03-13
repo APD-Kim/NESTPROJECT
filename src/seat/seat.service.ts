@@ -36,6 +36,8 @@ export class SeatService {
 
     const nextUrl = lastItem && new URL('http://localhost:3000/seat');
 
+
+
     if (nextUrl) {
       for (const key of Object.keys(dto)) {
         if (dto[key]) {
@@ -44,6 +46,7 @@ export class SeatService {
           }
         }
       }
+
       let key = null;
       if (dto.order__createdAt === 'ASC') {
         key = 'where__id_more_than';

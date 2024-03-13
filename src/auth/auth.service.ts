@@ -2,6 +2,7 @@ import {
   ConflictException,
   Injectable,
   InternalServerErrorException,
+  Logger,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -23,6 +24,7 @@ import { InjectQueue } from '@nestjs/bull';
 
 @Injectable()
 export class AuthService {
+  logger = new Logger(AuthService.name);
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
@@ -34,7 +36,6 @@ export class AuthService {
     private queue: Queue,
   ) {}
   async createUser(createUserCredentialDto: CreateUserCredentialDto): Promise<User> {
-
     const { username, password } = createUserCredentialDto;
     const hashedPassowrd: string = await hash(password, 10);
 
@@ -61,7 +62,6 @@ export class AuthService {
 
       return user;
     });
-    console.log(3);
     return transactionResult;
   }
 
@@ -97,7 +97,7 @@ export class AuthService {
     });
     return { rest, point: total };
   }
-
+  //이메일 인증코드 전송하기
   async sendValidNumber(validEmailDto: ValidEmailDto, user: User) {
     const { email } = validEmailDto;
     const jobData = {
@@ -106,9 +106,5 @@ export class AuthService {
     };
     this.queue.add('valid', jobData, { removeOnComplete: true });
     return { message: '이메일 전송 완료' };
-    //이미 이메일 유효성 검사는 통과했으니 바로 이메일 보내주면 됨 //완료
-    // 이메일에 인증 코드를 보내줬을 때, 해당 유저의 아이디와 이메일을 레디스에 인증코드로 저장해두고,
-    // 다른 메서드에서 해당 인증코드를 body에 담아 보내줬을 때, 해당 인증코드를 redis에서 찾고, 일치하는 값이 있다면
-    // 해당 인증코드의 value값을 꺼내 해당 유저 아이디로 이메일과 isValid를 추가해줌
   }
 }

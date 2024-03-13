@@ -18,10 +18,11 @@ import { AuthGuard } from '@nestjs/passport';
 import { GetUser } from './get-user.decorator';
 import { RolesGuard } from './roles.guard';
 import { ValidEmailDto } from './dto/eamil.dto';
+import { winstonLogger } from 'src/utils/winston.config';
 
 @Controller('auth')
 export class AuthController {
-  logger = new Logger();
+  logger = winstonLogger;
   constructor(private readonly authService: AuthService) {}
 
   @Post('/sign-up')

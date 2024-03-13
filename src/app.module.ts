@@ -3,16 +3,12 @@ import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
-import { UserController } from './user/user.controller';
-import { UserService } from './user/user.service';
 import { UserModule } from './user/user.module';
 import { ConcertModule } from './concert/concert.module';
 import Joi from 'joi';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { User } from './user/entity/user.entity';
-import { PointController } from './point/point.controller';
-import { PointService } from './point/point.service';
 import { PointModule } from './point/point.module';
 import { ReservationModule } from './reservation/reservation.module';
 import { SeatModule } from './seat/seat.module';
@@ -25,6 +21,9 @@ import { Concert } from './concert/entities/concert.entity';
 import { LoggingInterceptor } from './logging.interceptor';
 import { BullModule } from '@nestjs/bull';
 import { RedisModule } from '@nestjs-modules/ioredis';
+import { CacheModule } from '@nestjs/cache-manager';
+import { LoggerModule } from './logger/logger.module';
+import { CommonModule } from './common/common.module';
 
 const typeOrmModuleOptions = {
   useFactory: async (configService: ConfigService): Promise<TypeOrmModuleOptions> => ({
@@ -79,6 +78,9 @@ export const queueFactory = (configService: ConfigService) => ({
         url: 'redis://127.0.0.1:6380',
       }),
     }),
+    CacheModule.register({ isGlobal: true, ttl: 30, max: 300 }),
+    LoggerModule,
+    CommonModule,
   ],
   controllers: [AppController],
   providers: [AppService, LoggingInterceptor],
